@@ -3,7 +3,7 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 
   tags = {
-    Creator = "liubomyr_puliak@epam.com"
+    Creator = var.creator_tag
   }
 }
 
@@ -14,7 +14,7 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
 
   tags = {
-    Creator = "liubomyr_puliak@epam.com"
+    Creator = var.creator_tag
   }
 }
 
@@ -33,7 +33,7 @@ resource "azurerm_public_ip" "pip" {
   domain_name_label   = var.dns_label
 
   tags = {
-    Creator = "liubomyr_puliak@epam.com"
+    Creator = var.creator_tag
   }
 }
 
@@ -43,7 +43,7 @@ resource "azurerm_network_security_group" "nsg" {
   resource_group_name = azurerm_resource_group.rg.name
 
   tags = {
-    Creator = "liubomyr_puliak@epam.com"
+    Creator = var.creator_tag
   }
 }
 
@@ -53,14 +53,14 @@ resource "azurerm_network_interface" "nic" {
   resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
-    name                          = "internal"
+    name                          = var.nic_ip_config_name
     subnet_id                     = azurerm_subnet.subnet.id
     public_ip_address_id          = azurerm_public_ip.pip.id
     private_ip_address_allocation = "Dynamic"
   }
 
   tags = {
-    Creator = "liubomyr_puliak@epam.com"
+    Creator = var.creator_tag
   }
 }
 
@@ -102,4 +102,31 @@ resource "azurerm_linux_virtual_machine" "vm" {
       "sudo systemctl start nginx"
     ]
   }
+}
+resource "azurerm_network_security_rule" "allow_http" {
+  name                        = var.nsg_rule_http
+  priority                    = 1001
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.nsg.name
+}
+
+resource "azurerm_network_security_rule" "allow_ssh" {
+  name                        = var.nsg_rule_ssh
+  priority                    = 1002
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.nsg.name
 }

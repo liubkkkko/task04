@@ -58,3 +58,22 @@ variable "vm_password" {
   type        = string
   sensitive   = true
 }
+variable "nsg_rule_http" {
+  description = "Name of the HTTP rule"
+  type        = string
+}
+
+variable "nsg_rule_ssh" {
+  description = "Name of the SSH rule"
+  type        = string
+}
+
+variable "creator_tag" {
+  description = "Creator tag for resources"
+  type        = string
+}
+variable "nic_ip_config_name" {
+  description = "Name of the IP configuration for the NIC"
+  type        = string
+  default     = "internal"
+}
