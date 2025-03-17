@@ -23,6 +23,10 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
+
+  tags = {
+    Creator = var.creator_tag
+  }
 }
 
 resource "azurerm_public_ip" "pip" {
@@ -102,6 +106,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
       "sudo systemctl start nginx"
     ]
   }
+  tags = {
+    Creator = var.creator_tag
+  }
 }
 resource "azurerm_network_security_rule" "allow_http" {
   name                        = var.nsg_rule_http
@@ -115,6 +122,9 @@ resource "azurerm_network_security_rule" "allow_http" {
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.rg.name
   network_security_group_name = azurerm_network_security_group.nsg.name
+  tags = {
+    Creator = var.creator_tag
+  }
 }
 
 resource "azurerm_network_security_rule" "allow_ssh" {
@@ -129,8 +139,14 @@ resource "azurerm_network_security_rule" "allow_ssh" {
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.rg.name
   network_security_group_name = azurerm_network_security_group.nsg.name
+  tags = {
+    Creator = var.creator_tag
+  }
 }
 resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = azurerm_network_security_group.nsg.id
+  tags = {
+    Creator = var.creator_tag
+  }
 }
